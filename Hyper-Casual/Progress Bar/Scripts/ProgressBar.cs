@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace SelfishCoder.HyperCasual.Utilities
+namespace SelfishCoder.Utilities.HyperCasual
 {
     /// <summary>
     /// 
