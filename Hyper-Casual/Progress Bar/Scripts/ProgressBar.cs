@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace SelfishCoder.Utilities.HyperCasual
@@ -6,7 +7,7 @@ namespace SelfishCoder.Utilities.HyperCasual
     /// <summary>
     /// 
     /// </summary>
-    [RequireComponent(typeof(RectTransform))]
+    [RequireComponent(typeof(RectTransform)),DisallowMultipleComponent]
     public class ProgressBar : MonoBehaviour
     {
         #region Fields
@@ -14,29 +15,29 @@ namespace SelfishCoder.Utilities.HyperCasual
         /// <summary>
         /// 
         /// </summary>
-        [Header("Dependencies")] [SerializeField]
-        private Image backgroundArea;
+        [Header("Dependencies")] 
+        [SerializeField] private Image backgroundArea = default;
 
         /// <summary>
         /// 
         /// </summary>
-        [SerializeField] private Image fillArea;
+        [SerializeField] private Image fillArea= default;
 
         /// <summary>
         /// 
         /// </summary>
-        [SerializeField] private Text currentLevelArea;
+        [SerializeField] private Text currentLevelArea= default;
 
         /// <summary>
         /// 
         /// </summary>
-        [SerializeField] private Text nextLevelArea;
+        [SerializeField] private Text nextLevelArea= default;
 
         /// <summary>
         /// 
         /// </summary>
-        [Header("Configuration")] [SerializeField]
-        private Color backgroundColor = Color.white;
+        [Header("Configuration")] 
+        [SerializeField] private Color backgroundColor = Color.white;
 
         /// <summary>
         /// 
@@ -56,8 +57,8 @@ namespace SelfishCoder.Utilities.HyperCasual
         /// <summary>
         /// 
         /// </summary>
-        [Header("Values")] [SerializeField, Range(0, 100)]
-        private float progress = 0;
+        [Header("Values")] 
+        [SerializeField, Range(0, 100)] private float progress = 0;
 
         /// <summary>
         /// 
@@ -81,20 +82,7 @@ namespace SelfishCoder.Utilities.HyperCasual
             get => progress;
             private set
             {
-                if (!(value > progress)) return;
-                
-                if (value<= minimumProgress)
-                {
-                    progress = minimumProgress;
-                }
-                else if (value>=maximumProgress)
-                {
-                    progress = maximumProgress;
-                }
-                else
-                {
-                    progress = value;
-                }
+                progress = Mathf.Clamp(value, minimumProgress, maximumProgress);
                 fillArea.fillAmount = progress / maximumProgress;
             }
         }
@@ -107,7 +95,7 @@ namespace SelfishCoder.Utilities.HyperCasual
             get => currentLevelNumber;
             private set
             {
-                currentLevelNumber = value < 1 ? 1 : value;
+                currentLevelNumber = value <= 1 ? 1 : value;
                 currentLevelArea.text = currentLevelNumber.ToString();
             }
         }
@@ -153,6 +141,12 @@ namespace SelfishCoder.Utilities.HyperCasual
 
         #endregion
 
+        #region Events
+
+        public event Action<float> ProgressChanged; 
+
+        #endregion
+        
         #region Private Methods
 
         /// <summary>
@@ -211,6 +205,19 @@ namespace SelfishCoder.Utilities.HyperCasual
         public void SetFillColor(Color color)
         {
             this.fillColor = color;
+        }
+
+        #endregion
+
+        #region Event Methods
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="newProgress"></param>
+        private void OnProgressChanged(float newProgress)
+        {
+            ProgressChanged?.Invoke(newProgress);
         }
 
         #endregion
